@@ -1,12 +1,12 @@
-# CC421 - Inteligencia Artificial
+# CC421 PC1
 
 ## RDF
 
-RDF es
+RDF es un "Framework" para la descripción de recursos de la Web Semántica. 
 
 ## Objetivo
 
-El objetivo de este trabajo es manipular una estructura RDF existente para describir recursos en un domino determinado. La estructura a manipular quedará a libertad del grupo pero deberáser informada con anterioridad al profesor del curso para su aprobación.
+El objetivo de este trabajo es manipular una estructura RDF existente para describir recursos en un domino determinado.
 
 ## Instalación
 
