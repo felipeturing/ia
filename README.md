@@ -2,7 +2,7 @@
 
 ## RDF
 
-RDF es un "Framework" para la descripción de recursos de la Web Semántica. 
+RDF es un "Framework" para la descripción de recursos de la Web Semántica.
 
 ## Objetivo
 
@@ -32,3 +32,4 @@ Please make sure to update tests as appropriate.
 1. Jesús Andrés Torrejón León
 2. Jordi Joel Bardales Rojas
 3. Walter Jesús Felipe Tolentino
+4. Julio César Yaranga Santé
