@@ -1,0 +1,52 @@
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix imdb: <http://www.csd.abdn.ac.uk/~ggrimnes/dev/imdb/IMDB#> .
+@prefix ns1: <http://xmlns.com/foaf/0.1/> .
+@prefix rev: <http://purl.org/stuff/rev#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<file:///home/turing/movies.n3> dc:title "Movie Theater" .
+
+<file:///home/turing/movies.n3#cinema> a ns1:Organization ;
+    ns1:name "Cinestar" ;
+    ns1:weblog "https://www.cinestar.com.pe/" .
+
+<https://www.imdb.com/title/tt2084970/> a imdb:Movie ;
+    dc:title "The Imitation Game" ;
+    rev:hasReview <file:///home/turing/movies.n3#Na7d82463830a430dac3e67151f70b9dc> ;
+    imdb:cast "Benedict Cumberbatch",
+        "Keira Knightley" ;
+    imdb:director "Morten Tyldum" ;
+    imdb:year 2014 .
+
+<https://www.imdb.com/title/tt2980516/> a imdb:Movie ;
+    dc:title "The Theory of Everything" ;
+    rev:hasReview <file:///home/turing/movies.n3#N1203987d130444e19ee06ecfc22e9b9f>,
+        <file:///home/turing/movies.n3#N6405e57fbee4496b83b6ea422609e5ae> ;
+    imdb:cast "Eddie Redmayne",
+        "Felicity Jones" ;
+    imdb:director "James Marsh" ;
+    imdb:year 2014 .
+
+[] a rev:Review ;
+    dc:date "2019-09-13T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 1 ;
+    rev:reviewer <file:///home/turing/users.n3#felipeturing> ;
+    rev:text "Un poco aburrida" .
+
+[] a rev:Review ;
+    dc:date "2021-02-14T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 5 ;
+    rev:reviewer <file:///home/turing/users.n3#felipeturing> ;
+    rev:text "Interesante" .
+
+[] a rev:Review ;
+    dc:date "2019-02-14T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 5 ;
+    rev:reviewer <file:///home/turing/users.n3#jordi15> ;
+    rev:text "Genial y profunda" .
