@@ -44,7 +44,9 @@ class DoConjunctiveGraph:
 
     def save(self):
         self.graph.serialize(self.uri, format="n3")
-        #print ("Grafo Serializado")
+
+    def len(self): # Contar el numero de triples
+        return self.graph.__len__()
 
     def help():
         print("Revisar : https://www.w3.org/TR/turtle/#BNode")
@@ -80,9 +82,6 @@ class UserFactory(DoConjunctiveGraph):
         self.graph.add((URIRef(self.uri + "#%s"%user_nick_you), REL["friendOf"], URIRef(self.uri + "#%s"%user_nick_me)))
         self.graph.add((URIRef(self.uri + "#%s"%user_nick_me), REL["friendOf"], URIRef(self.uri + "#%s"%user_nick_you)))
         self.save()
-
-    def len(self): # Contar el numero de triples
-        return self.graph.__len__()
 
     def list_friends(self):
         return self.graph.query(
@@ -170,21 +169,34 @@ class Store(DoConjunctiveGraph):
         review = BNode()  # @@ humanize the identifier (something like #rev-$date)
         movieuri = URIRef("https://www.imdb.com/title/tt%s/" % movie_id)
         self.graph.add((movieuri, REV["hasReview"], URIRef("%s#%s" % (self.uri, review))))
-        self.graph.add((review, RDF.type, REV["Review"]))
-        self.graph.add((review, DC["date"], Literal(date)))
-        self.graph.add((review, REV["maxRating"], Literal(5)))
-        self.graph.add((review, REV["minRating"], Literal(0)))
-        self.graph.add((review, REV["reviewer"], user_uri))
-        self.graph.add((review, REV["rating"], Literal(rating)))
+        #self.graph.add((review, RDF.type, REV["Review"]))
+        #self.graph.add((review, DC["date"], Literal(date)))
+        #self.graph.add((review, REV["maxRating"], Literal(5)))
+        #self.graph.add((review, REV["minRating"], Literal(0)))
+        #self.graph.add((review, REV["reviewer"], user_uri))
+        #self.graph.add((review, REV["rating"], Literal(rating)))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)), RDF.type, REV["Review"]))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)), DC["date"], Literal(date)))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["maxRating"], Literal(5)))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["minRating"], Literal(0)))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["reviewer"], user_uri))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["rating"], Literal(rating)))
         if comment is not None:
-            self.graph.add((review, REV["text"], Literal(comment)))
+            self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["text"], Literal(comment)))
         self.save()
 
-    def recommend(self, nick_user):
-        return False
+    def list_movies_user(self, user_uri):
+        return self.graph.query(
+            """ SELECT DISTINCT ?title
+                WHERE {
+                    ?p rev:reviewer %s%s%s .
+                    ?movie rev:hasReview ?p .
+                    ?movie dc:title ?title .
+                }"""%("<",user_uri,">"))
 
 
 def main(argv=None):
+
     if not argv:
         argv = sys.argv
 
@@ -264,6 +276,19 @@ def main(argv=None):
     elif argv[1] == "listofmovies":
         for movie in s.listmovies():
             print("%s - %s"%movie)
+
+    elif argv[1] == "recommendtome":
+        """ Peliculas clasificadas por amigos """
+        """for nick_friend in u.list_friends_of_nick(argv[2]):
+            print("Amig@ : %s"%nick_friend)
+            friend_uri = u.get_user_uri(nick_friend)
+            for movie_user in s.list_movies_user(friend_uri):
+                print("  %s"%movie_user)"""
+        for nick_friend in u.list_friends_of_nick(argv[2]):
+            for movie_user in s.list_movies_user(u.get_user_uri(nick_friend)):
+                print("  %s"%movie_user)
+
+
     else: print("Sin acciones")
 
 if __name__ == "__main__":
@@ -272,3 +297,26 @@ if __name__ == "__main__":
             'This example requires the IMDB library! Install with "pip install imdbpy"'
         )
     main()
+
+
+"""
+from rdflib import Graph
+g = Graph()
+g.parse('dicom.owl')
+q =
+[poner 3 comillas] SELECT ?c WHERE { ?c rdf:type owl:Class .
+       FILTER (!isBlank(?c)) } [poner 3 comillas]
+
+qres = g.query(q)
+
+"""
+
+"""
+References :
+    RDF 1.1 Turtle : https://www.w3.org/TR/turtle/
+    FOAF specification : http://xmlns.com/foaf/spec/
+    rdflib.graph.Graph : https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.graph.Graph
+    IMDB roles : https://imdbpy.readthedocs.io/en/latest/usage/role.html
+    Querying with SPARQL : https://rdflib.readthedocs.io/en/stable/intro_to_sparql.html
+    Working with SPARQL : https://rdfextras.readthedocs.io/en/latest/working_with.html
+"""
