@@ -1,0 +1,86 @@
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix imdb: <http://www.csd.abdn.ac.uk/~ggrimnes/dev/imdb/IMDB#> .
+@prefix ns1: <http://xmlns.com/foaf/0.1/> .
+@prefix rev: <http://purl.org/stuff/rev#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<file:///home/turing/movies.n3> dc:title "Movie Theater" .
+
+<file:///home/turing/movies.n3#cinema> a ns1:Organization ;
+    ns1:name "Cinestar" ;
+    ns1:weblog "https://www.cinestar.com.pe/" .
+
+<https://www.imdb.com/title/tt2084970/> a imdb:Movie ;
+    dc:title "The Imitation Game" ;
+    rev:hasReview <file:///home/turing/movies.n3#N42e249b0830d4d2db6dab6b020eb4327> ;
+    imdb:cast "Benedict Cumberbatch",
+        "Keira Knightley" ;
+    imdb:director "Morten Tyldum" ;
+    imdb:year 2014 .
+
+<https://www.imdb.com/title/tt2980516/> a imdb:Movie ;
+    dc:title "The Theory of Everything" ;
+    rev:hasReview <file:///home/turing/movies.n3#N091c448a130e493aa470f854df7d21d6>,
+        <file:///home/turing/movies.n3#N78e64eca1b4044a7aa64f86262f8e8de>,
+        <file:///home/turing/movies.n3#Nb08d6cb674e944fda23f5b5034cd2c03>,
+        <file:///home/turing/movies.n3#Nc9795543c825482886afd59bd4580c35> ;
+    imdb:cast "Eddie Redmayne",
+        "Felicity Jones" ;
+    imdb:director "James Marsh" ;
+    imdb:year 2014 .
+
+<https://www.imdb.com/title/tt9208876/> a imdb:Movie ;
+    dc:title "The Falcon and the Winter Soldier" ;
+    rev:hasReview <file:///home/turing/movies.n3#N749c0863a3084db59528198622f71997> ;
+    imdb:cast "Anthony Mackie",
+        "Sebastian Stan" ;
+    imdb:director "Kari Skogland" ;
+    imdb:year 2021 .
+
+<file:///home/turing/movies.n3#N091c448a130e493aa470f854df7d21d6> a rev:Review ;
+    dc:date "2019-02-13T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 1 ;
+    rev:reviewer <file:///home/turing/users.n3#felipeturing> ;
+    rev:text "Algo aburrida" .
+
+<file:///home/turing/movies.n3#N42e249b0830d4d2db6dab6b020eb4327> a rev:Review ;
+    dc:date "2019-02-13T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 5 ;
+    rev:reviewer <file:///home/turing/users.n3#felipeturing> ;
+    rev:text "Genial" .
+
+<file:///home/turing/movies.n3#N749c0863a3084db59528198622f71997> a rev:Review ;
+    dc:date "2019-02-12T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 3 ;
+    rev:reviewer <file:///home/turing/users.n3#lara15> ;
+    rev:text "A nada" .
+
+<file:///home/turing/movies.n3#N78e64eca1b4044a7aa64f86262f8e8de> a rev:Review ;
+    dc:date "2019-04-13T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 5 ;
+    rev:reviewer <file:///home/turing/users.n3#lara15> ;
+    rev:text "Increible" .
+
+<file:///home/turing/movies.n3#Nb08d6cb674e944fda23f5b5034cd2c03> a rev:Review ;
+    dc:date "2019-04-15T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 3 ;
+    rev:reviewer <file:///home/turing/users.n3#jordi15> ;
+    rev:text "Más o menos" .
+
+<file:///home/turing/movies.n3#Nc9795543c825482886afd59bd4580c35> a rev:Review ;
+    dc:date "2021-08-21T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 1 ;
+    rev:reviewer <file:///home/turing/users.n3#jesus15> ;
+    rev:text "No me gusto" .

@@ -60,7 +60,7 @@ class UserFactory(DoConjunctiveGraph):
         self.graph.bind("foaf", FOAF)
         self.graph.bind("rel", REL)
         self.graph.add((URIRef(self.uri), DC["title"], Literal(self.title)))
-        self.save()
+        #self.save()
 
     def new_user(self, user_data=None):
         user_nick, user_email = (r_newuser.match(user_data).group(1), r_newuser.match(user_data).group(2))
@@ -150,6 +150,20 @@ class Store(DoConjunctiveGraph):
                     ?p dc:title ?title .
                 }""")
 
+    def data_movie_by_uri(self, movie_uri):
+        return self.graph.query(
+            """ SELECT ?title ?year
+                WHERE {
+                    %s%s%s dc:title ?title .
+                    %s%s%s imdb:year ?year .
+                }"""%("<",movie_uri,">","<",movie_uri,">"))
+
+    def movie_uri_by_title(self, movie_title):
+        return self.graph.query(
+            """ SELECT DISTINCT ?p
+                WHERE {
+                    ?p dc:title "%s" .
+                }"""%movie_title)
 
     def new_movie(self, movie):
         movieuri = URIRef("https://www.imdb.com/title/tt%s/" % movie.movieID)
@@ -203,92 +217,101 @@ def main(argv=None):
     s = Store(storefn, storeuri, title_store)
     u = UserFactory(userfn, useruri, title_user)
 
-    if argv[1] in ("help", "--help", "h", "-h"):
-        help()
-    elif argv[1] == "newuser":
-        nick_user = r_newuser.match(argv[2]).group(1)
-        if u.user_is_in(nick_user):
-           raise Exception("El nick %s ya se encuentra registrado"%nick_user)
-        else:
-            nick_registered = u.new_user(argv[2])
-            try:
-                user_name = eval(input("Nombre: "))
-                u.set_user_name(nick_registered, user_name)
-            except:
-                raise Exception ("Error al registrar el nombre de %s"%nick_registered)
-    elif argv[1] == "setfriends" :
-        u.set_friends(argv[2], argv[3])
-    elif argv[1] == "triples":
-        print(u.len())
-    elif argv[1] == "listofusers":
-        for user_name in u.list_users():
-            print("%s"%user_name)
-    elif argv[1] == "userbynick":
-        for data_user in u.user_by_nick(argv[2]):
-            print(" Nick : %s\n Nombre : %s\n Email : %s"%data_user)
-    elif argv[1] == "listoffriends":
-        for data_friend in u.list_friends():
-            print("%s es amig@ de %s"%data_friend)
-    elif argv[1] == "myfriends":
-        for nick_friend in u.list_friends_of_nick(argv[2]):
-            print("%s"%nick_friend)
-    elif argv[1] == "cinema":
-        if os.path.exists(storefn):
-            print("Ya existe un cine registrado")
-        else:
-            s.cinema(argv[2])
-    elif argv[1] == "newmovie":
-        if argv[2].startswith("https://www.imdb.com/title/tt"):
-            if s.movie_is_in(argv[2]):
-                raise Exception ("La película ya se encuentra registrada")
+    if  len(argv)>1:
+        if argv[1] in ("help", "--help", "h", "-h"):
+            help()
+        elif argv[1] == "newuser":
+            nick_user = r_newuser.match(argv[2]).group(1)
+            if u.user_is_in(nick_user):
+               raise Exception("El nick %s ya se encuentra registrado"%nick_user)
             else:
-                i = imdb.IMDb()
-                movie = i.get_movie(argv[2][len("https://www.imdb.com/title/tt") : -1])
-                print("%s (%s)" % (movie["title"].encode("utf-8"), movie["year"]))
-                for director in movie["director"]:
-                    print("Dirigida por: %s" % director["name"].encode("utf-8"))
-                print("Actores principales:")
-                for actor in (movie["cast"][0], movie["cast"][1]):
-                    print("%s como %s" % (actor["name"].encode("utf-8"),actor.currentRole))
-                s.new_movie(movie) #Registrar la cabecera de la pelicula (nombre, fecha de revision, tipo de objeto)
-        else: raise Exception("El formato de la película debe ser https://www.imdb.com/title/tt[id]/")
-
-    elif argv[1] == "usermovie":
-        if u.user_is_in(argv[2]) and s.movie_is_in(argv[3]):
-            user_uri = u.get_user_uri(argv[2])
-            movie_id = argv[3][len("https://www.imdb.com/title/tt") : -1]
-            rating = None
-            while not rating or (rating > 5 or rating <= 0):
+                nick_registered = u.new_user(argv[2])
                 try:
-                    rating = int(eval(input("Valoración (max 5): ")))
-                except ValueError:
-                    rating = None
-            date = None
-            while not date:
-                try:
-                    i = eval(input("Fecha de visualización (YYYY-MM-DD): "))
-                    date = datetime.datetime(*time.strptime(i, "%Y-%m-%d")[:6])
+                    user_name = eval(input("Nombre: "))
+                    u.set_user_name(nick_registered, user_name)
                 except:
+                    raise Exception ("Error al registrar el nombre de %s"%nick_registered)
+        elif argv[1] == "setfriends" :
+            u.set_friends(argv[2], argv[3])
+        elif argv[1] == "triplesusersn3":
+            print(u.len())
+        elif argv[1] == "triplesmoviesn3":
+            print(s.len())
+        elif argv[1] == "listofusers":
+            for user_name in u.list_users():
+                print("%s"%user_name)
+        elif argv[1] == "userbynick":
+            for data_user in u.user_by_nick(argv[2]):
+                print(" Nick : %s\n Nombre : %s\n Email : %s"%data_user)
+        elif argv[1] == "listoffriends":
+            for data_friend in u.list_friends():
+                print("%s es amig@ de %s"%data_friend)
+        elif argv[1] == "myfriends":
+            for nick_friend in u.list_friends_of_nick(argv[2]):
+                print("%s"%nick_friend)
+        elif argv[1] == "cinema":
+            if os.path.exists(storefn):
+                print("Ya existe un cine registrado")
+            else:
+                s.cinema(argv[2])
+        elif argv[1] == "newmovie":
+            if argv[2].startswith("https://www.imdb.com/title/tt"):
+                if s.movie_is_in(argv[2]):
+                    raise Exception ("La película ya se encuentra registrada")
+                else:
+                    i = imdb.IMDb()
+                    movie = i.get_movie(argv[2][len("https://www.imdb.com/title/tt") : -1])
+                    print("%s (%s)" % (movie["title"].encode("utf-8"), movie["year"]))
+                    for director in movie["director"]:
+                        print("Dirigida por: %s" % director["name"].encode("utf-8"))
+                    print("Actores principales:")
+                    for actor in (movie["cast"][0], movie["cast"][1]):
+                        print("%s como %s" % (actor["name"].encode("utf-8"),actor.currentRole))
+                    s.new_movie(movie) #Registrar la cabecera de la pelicula (nombre, fecha de revision, tipo de objeto)
+            else: raise Exception("El formato de la película debe ser https://www.imdb.com/title/tt[id]/")
+
+        elif argv[1] == "usermovie":
+            if not len(list(s.movie_uri_by_title(argv[3]))) == 0:
+                movie_uri = "%s"%list(s.movie_uri_by_title(argv[3]))[0]
+                if u.user_is_in(argv[2]) and s.movie_is_in(movie_uri):
+                    user_uri = u.get_user_uri(argv[2])
+                    movie_id = movie_uri[len("https://www.imdb.com/title/tt") : -1]
+                    rating = None
+                    print("Película : %s \t Año: %s"%list(s.data_movie_by_uri(movie_uri))[0])
+                    while not rating or (rating > 5 or rating <= 0):
+                        try:
+                            rating = int(eval(input("Valoración (max 5): ")))
+                        except ValueError:
+                            rating = None
                     date = None
-            comment = eval(input("Comentario: "))
-            s.new_review(user_uri, movie_id, date, rating, comment) # Se regitra el detalle de la revision de la pelicula
+                    while not date:
+                        try:
+                            i = eval(input("Fecha de visualización (YYYY-MM-DD): "))
+                            date = datetime.datetime(*time.strptime(i, "%Y-%m-%d")[:6])
+                        except:
+                            date = None
+                    comment = eval(input("Comentario: "))
+                    s.new_review(user_uri, movie_id, date, rating, comment)
+            else:
+                print("Película no encontrada")
 
-    elif argv[1] == "listofmovies":
-        for movie in s.listmovies():
-            print("%s - %s"%movie)
+        elif argv[1] == "listofmovies":
+            for movie in s.listmovies():
+                print("%s - %s"%movie)
 
-    elif argv[1] == "recommendtome":
-        """ Peliculas clasificadas por amigos """
-        """for nick_friend in u.list_friends_of_nick(argv[2]):
-            print("Amig@ : %s"%nick_friend)
-            friend_uri = u.get_user_uri(nick_friend)
-            for movie_user in s.list_movies_user(friend_uri):
-                print("  %s"%movie_user)"""
-        for nick_friend in u.list_friends_of_nick(argv[2]):
-            for movie_user in s.list_movies_user(u.get_user_uri(nick_friend)):
-                print("  %s"%movie_user)
+        elif argv[1] == "recommendtome":
+            """ Peliculas clasificadas por amigos """
+            """for nick_friend in u.list_friends_of_nick(argv[2]):
+                print("Amig@ : %s"%nick_friend)
+                friend_uri = u.get_user_uri(nick_friend)
+                for movie_user in s.list_movies_user(friend_uri):
+                    print("  %s"%movie_user)"""
+            for nick_friend in u.list_friends_of_nick(argv[2]):
+                for movie_user in s.list_movies_user(u.get_user_uri(nick_friend)):
+                    print("  %s"%movie_user)
 
 
+        else: print("Bandera no reconocida")
     else: print("Sin acciones")
 
 if __name__ == "__main__":
