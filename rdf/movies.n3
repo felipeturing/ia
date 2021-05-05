@@ -10,9 +10,56 @@
     ns1:name "Cinestar" ;
     ns1:weblog "https://www.cinestar.com.pe/" .
 
+<https://www.imdb.com/title/tt0068646/> a imdb:Movie ;
+    dc:title "The Godfather" ;
+    imdb:cast "Al Pacino",
+        "Marlon Brando" ;
+    imdb:director "Francis Ford Coppola" ;
+    imdb:year 1972 .
+
+<https://www.imdb.com/title/tt0102926/> a imdb:Movie ;
+    dc:title "The Silence of the Lambs" ;
+    imdb:cast "Jodie Foster",
+        "Lawrence A. Bonney" ;
+    imdb:director "Jonathan Demme" ;
+    imdb:genres "Crime",
+        "Drama",
+        "Thriller" ;
+    imdb:year 1991 .
+
+<https://www.imdb.com/title/tt0109830/> a imdb:Movie ;
+    dc:title "Forrest Gump" ;
+    rev:hasReview <file:///home/turing/movies.n3#Nd3dc3b38cd574c7ba76f399c01a72818> ;
+    imdb:cast "Rebecca Williams",
+        "Tom Hanks" ;
+    imdb:director "Robert Zemeckis" ;
+    imdb:year 1994 .
+
+<https://www.imdb.com/title/tt0120737/> a imdb:Movie ;
+    dc:title "The Lord of the Rings: The Fellowship of the Ring" ;
+    imdb:cast "Alan Howard",
+        "Noel Appleby" ;
+    imdb:director "Peter Jackson" ;
+    imdb:year 2001 .
+
+<https://www.imdb.com/title/tt0137523/> a imdb:Movie ;
+    dc:title "Fight Club" ;
+    imdb:cast "Brad Pitt",
+        "Edward Norton" ;
+    imdb:director "David Fincher" ;
+    imdb:year 1999 .
+
+<https://www.imdb.com/title/tt0468569/> a imdb:Movie ;
+    dc:title "The Dark Knight" ;
+    imdb:cast "Christian Bale",
+        "Heath Ledger" ;
+    imdb:director "Christopher Nolan" ;
+    imdb:year 2008 .
+
 <https://www.imdb.com/title/tt2084970/> a imdb:Movie ;
     dc:title "The Imitation Game" ;
-    rev:hasReview <file:///home/turing/movies.n3#N42e249b0830d4d2db6dab6b020eb4327> ;
+    rev:hasReview <file:///home/turing/movies.n3#N42e249b0830d4d2db6dab6b020eb4327>,
+        <file:///home/turing/movies.n3#Nf1cd4c7ed14c4adb931026d7b54f0420> ;
     imdb:cast "Benedict Cumberbatch",
         "Keira Knightley" ;
     imdb:director "Morten Tyldum" ;
@@ -94,3 +141,18 @@
     rev:reviewer <file:///home/turing/users.n3#jesus15> ;
     rev:text "No me gusto" .
 
+<file:///home/turing/movies.n3#Nd3dc3b38cd574c7ba76f399c01a72818> a rev:Review ;
+    dc:date "2019-02-02T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 3 ;
+    rev:reviewer <file:///home/turing/users.n3#felipeturing> ;
+    rev:text "Sobrevalorada" .
+
+<file:///home/turing/movies.n3#Nf1cd4c7ed14c4adb931026d7b54f0420> a rev:Review ;
+    dc:date "2021-03-21T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 2 ;
+    rev:reviewer <file:///home/turing/users.n3#lara15> ;
+    rev:text "Regular" .

@@ -1,12 +1,17 @@
-import datetime, os, sys, re, time, rdfextras
+import datetime, os, sys, re, time
+import rdfextras as rdfe
+import numpy as np
 
 try:
     import imdb
 except ImportError:
     imdb = None
 
+from tabulate import tabulate
+from pprintpp import pprint
 from rdflib import BNode, ConjunctiveGraph, URIRef, Literal, Namespace, RDF
 from rdflib.namespace import FOAF, DC
+
 
 storefn = os.path.expanduser("~/movies.n3")
 userfn = os.path.expanduser("~/users.n3")
@@ -165,11 +170,46 @@ class Store(DoConjunctiveGraph):
                     ?p dc:title "%s" .
                 }"""%movie_title)
 
+    def top_rated_movies(self, offset, limit, m):
+        C = self.graph.query(
+            """ SELECT (AVG(?rating) as ?R)
+                WHERE {
+                    ?url rev:hasReview ?review .
+                    ?review a rev:Review .
+                    ?review rev:rating ?rating .
+                }""")
+        C = float("%s"%list(C)[0])
+# weighted rating (WR) = (v ÷ (v+m)) × R + (m ÷ (v+m)) × C
+        return self.graph.query(
+            """ SELECT (?title AS ?pelicula)
+                       (COUNT(?review) AS ?v)
+                       (AVG(?rating) AS ?R)
+                       (
+                            (
+                             (COUNT(?review)/(COUNT(?review)+%d))*AVG(?rating) +
+                             (%d            /(COUNT(?review)+%d))*%.4f
+                            )
+                            AS ?IMDbRating
+                        )
+
+                WHERE {
+                    ?url rev:hasReview ?review .
+                    ?url dc:title ?title .
+                    ?review a rev:Review .
+                    ?review rev:rating ?rating .
+                }
+                GROUP BY ?title
+                ORDER BY DESC(?IMDbRating)
+                LIMIT %s
+                OFFSET %s"""%(m,m,m,C,limit, offset))
+
     def new_movie(self, movie):
         movieuri = URIRef("https://www.imdb.com/title/tt%s/" % movie.movieID)
         self.graph.add((movieuri, RDF.type, IMDB["Movie"]))
         self.graph.add((movieuri, DC["title"], Literal(movie["title"])))
         self.graph.add((movieuri, IMDB["year"], Literal(int(movie["year"]))))
+        for genres in movie["genres"]:
+            self.graph.add((movieuri, IMDB["genres"], Literal(genres)))
         for director in movie["director"]:
             self.graph.add((movieuri, IMDB["director"], Literal(director)))
         for actor in (movie["cast"][0], movie["cast"][1]):
@@ -257,20 +297,25 @@ def main(argv=None):
         elif argv[1] == "newmovie":
             if argv[2].startswith("https://www.imdb.com/title/tt"):
                 if s.movie_is_in(argv[2]):
-                    raise Exception ("La película ya se encuentra registrada")
+                    print("La película ya se encuentra registrada")
                 else:
                     i = imdb.IMDb()
                     movie = i.get_movie(argv[2][len("https://www.imdb.com/title/tt") : -1])
-                    print("%s (%s)" % (movie["title"].encode("utf-8"), movie["year"]))
+                    print("Película : %s" %movie["title"].encode("utf-8"))
+                    print("Año : %s"%movie["year"])
+                    print("Género : ", end = " ")
+                    for genre in movie["genres"]:
+                        print("%s"%genre, end = " ")
+                    print("")
                     for director in movie["director"]:
                         print("Dirigida por: %s" % director["name"].encode("utf-8"))
                     print("Actores principales:")
                     for actor in (movie["cast"][0], movie["cast"][1]):
                         print("%s como %s" % (actor["name"].encode("utf-8"),actor.currentRole))
-                    s.new_movie(movie) #Registrar la cabecera de la pelicula (nombre, fecha de revision, tipo de objeto)
+                    s.new_movie(movie) #Registrar la cabecera de la pelicula (nombre, fecha de revision, tipo de objeto, director, genero y actores principales)
             else: raise Exception("El formato de la película debe ser https://www.imdb.com/title/tt[id]/")
 
-        elif argv[1] == "usermovie":
+        elif argv[1] == "review":
             if not len(list(s.movie_uri_by_title(argv[3]))) == 0:
                 movie_uri = "%s"%list(s.movie_uri_by_title(argv[3]))[0]
                 if u.user_is_in(argv[2]) and s.movie_is_in(movie_uri):
@@ -309,8 +354,13 @@ def main(argv=None):
             for nick_friend in u.list_friends_of_nick(argv[2]):
                 for movie_user in s.list_movies_user(u.get_user_uri(nick_friend)):
                     print("  %s"%movie_user)
-
-
+        elif argv[1] == "topratedmovies":
+            table = np.array([["Película", "Número de reviews", "Valoración promedio(0-5)","IMDb Rating"]])
+            m = 2 # minimo de reviews requeridas para ingresar en la lista top de recomendados
+            for movie in s.top_rated_movies(argv[2], argv[3], m):
+                if(int(movie[1])>=m):
+                    table = np.append(table, [movie] ,axis = 0)
+            print(tabulate(np.delete(table, 0, axis=0), table[0], tablefmt="fancy_grid", numalign="right", floatfmt=".1f"))
         else: print("Bandera no reconocida")
     else: print("Sin acciones")
 
@@ -323,23 +373,37 @@ if __name__ == "__main__":
 
 
 """
-from rdflib import Graph
-g = Graph()
-g.parse('dicom.owl')
-q =
-[poner 3 comillas] SELECT ?c WHERE { ?c rdf:type owl:Class .
-       FILTER (!isBlank(?c)) } [poner 3 comillas]
+REMARK 1 :
+    from rdflib import Graph
+    g = Graph()
+    g.parse('dicom.owl')
+    q =
+    [poner 3 comillas] SELECT ?c WHERE { ?c rdf:type owl:Class .
+           FILTER (!isBlank(?c)) } [poner 3 comillas]
 
-qres = g.query(q)
+    qres = g.query(q)
 
+"""
+"""
+REMARK 2 :
+    weighted rating (WR) = (v ÷ (v+m)) × R + (m ÷ (v+m)) × C
+
+    Where:
+
+    R = average for the movie (mean) = (Rating)
+    v = number of votes for the movie = (votes)
+    m = minimum votes required to be listed in the Top 250 (currently 25,000)
+    C = the mean vote across the whole report
 """
 
 """
-References :
-    RDF 1.1 Turtle : https://www.w3.org/TR/turtle/
-    FOAF specification : http://xmlns.com/foaf/spec/
-    rdflib.graph.Graph : https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.graph.Graph
-    IMDB roles : https://imdbpy.readthedocs.io/en/latest/usage/role.html
-    Querying with SPARQL : https://rdflib.readthedocs.io/en/stable/intro_to_sparql.html
-    Working with SPARQL : https://rdfextras.readthedocs.io/en/latest/working_with.html
+REMARK 3 :
+    References :
+        RDF 1.1 Turtle : https://www.w3.org/TR/turtle/
+        FOAF specification : http://xmlns.com/foaf/spec/
+        rdflib.graph.Graph : https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.graph.Graph
+        IMDB roles : https://imdbpy.readthedocs.io/en/latest/usage/role.html
+        SPARQL Query Language for RDF : https://www.w3.org/TR/rdf-sparql-query/#modDistinct
+        Querying with SPARQL : https://rdflib.readthedocs.io/en/stable/intro_to_sparql.html
+        Working with SPARQL : https://rdfextras.readthedocs.io/en/latest/working_with.html
 """
