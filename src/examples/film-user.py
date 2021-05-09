@@ -44,8 +44,8 @@ class DoConjunctiveGraph:
         if os.path.exists(self.pathfn):
             self.graph.load(self.uri, format="n3")
         self.graph.bind("dc", DC) # Para enlazar los prefijos
-        self.graph.bind("imdb", IMDB)
-        self.graph.bind("rev", REV)
+        self.graph.bind("foaf", FOAF)
+
 
     def save(self):
         self.graph.serialize(self.uri, format="n3")
@@ -54,7 +54,7 @@ class DoConjunctiveGraph:
         return self.graph.__len__()
 
     def help():
-        print("Revisar : https://www.w3.org/TR/turtle/#BNode")
+        print("Revisar : https://www.w3.org/TR/turtle/")
 
 
 class UserFactory(DoConjunctiveGraph):
@@ -62,7 +62,6 @@ class UserFactory(DoConjunctiveGraph):
     def __init__(self, pathfn, uri, title):
         #self.title = "Fabrica de Usuarios"
         DoConjunctiveGraph.__init__(self, pathfn, uri, title)
-        self.graph.bind("foaf", FOAF)
         self.graph.bind("rel", REL)
         self.graph.add((URIRef(self.uri), DC["title"], Literal(self.title)))
         #self.save()
@@ -134,6 +133,8 @@ class Store(DoConjunctiveGraph):
 
     def __init__(self, pathfn, uri, title ):
         DoConjunctiveGraph.__init__(self, pathfn, uri, title)
+        self.graph.bind("imdb", IMDB)
+        self.graph.bind("rev", REV)
         self.graph.add((URIRef(self.uri), DC["title"], Literal(self.title)))
         #self.save()
 
@@ -179,7 +180,7 @@ class Store(DoConjunctiveGraph):
                     ?review rev:rating ?rating .
                 }""")
         C = float("%s"%list(C)[0])
-# weighted rating (WR) = (v ÷ (v+m)) × R + (m ÷ (v+m)) × C
+
         return self.graph.query(
             """ SELECT (?title AS ?pelicula)
                        (COUNT(?review) AS ?v)
@@ -216,8 +217,29 @@ class Store(DoConjunctiveGraph):
             self.graph.add((movieuri, IMDB["cast"], Literal(actor)))
         self.save()
 
+    def movie_by_url(self, url):
+        return self.graph.query(
+            """ SELECT ?title ?year ?director ?cast
+                WHERE {
+                    %s a imdb:Movie .
+                    %s dc:title ?title .
+                    %s imdb:year ?year .
+                    %s imdb:director ?director .
+                    %s imdb:cast ?cast .
+                }"""%(url,url,url,url,url))
+
     def movie_is_in(self, uri):
         return (URIRef(uri), RDF.type, IMDB["Movie"]) in self.graph
+
+    def reviews_by_user(self, user_uri):
+        return self.graph.query(
+            """ SELECT ?title
+                WHERE {
+                    ?p rev:reviewer %s .
+                    ?q rev:hasReview ?p .
+                    ?q dc:title ?title
+
+                }"""%(user_uri))
 
     def new_review(self, user_uri, movie_id, date, rating, comment=None):
         review = BNode()  # @@ humanize the identifier (something like #rev-$date)
@@ -344,6 +366,11 @@ def main(argv=None):
             for movie in s.listmovies():
                 print("%s - %s"%movie)
 
+        elif argv[1] == "moviebyURL":
+            for data_movie in s.movie_by_url("<https://www.imdb.com/title/tt0468569/>"):
+                print("%s-%s-%s-%s"%data_movie)
+
+
         elif argv[1] == "recommendtome":
             """ Peliculas clasificadas por amigos """
             """for nick_friend in u.list_friends_of_nick(argv[2]):
@@ -356,7 +383,7 @@ def main(argv=None):
                     print("  %s"%movie_user)
         elif argv[1] == "topratedmovies":
             table = np.array([["Película", "Número de reviews", "Valoración promedio(0-5)","IMDb Rating"]])
-            m = 2 # minimo de reviews requeridas para ingresar en la lista top de recomendados
+            m = 2# minimo de reviews requeridas para ingresar en la lista top de recomendados
             for movie in s.top_rated_movies(argv[2], argv[3], m):
                 if(int(movie[1])>=m):
                     table = np.append(table, [movie] ,axis = 0)
