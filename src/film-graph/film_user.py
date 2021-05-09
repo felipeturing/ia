@@ -114,6 +114,8 @@ class UserFactory(DoConjunctiveGraph):
                        REL["friendOf"], URIRef(self.uri + "#%s" % user_nick_me)))
         self.graph.add((URIRef(self.uri + "#%s" % user_nick_me),
                        REL["friendOf"], URIRef(self.uri + "#%s" % user_nick_you)))
+    
+        print("Amistad establecida")
         self.save()
 
     def list_friends(self):
@@ -294,8 +296,28 @@ class Store(DoConjunctiveGraph):
                     ?movie rev:hasReview ?p .
                     ?movie dc:title ?title .
                 }""" % ("<", user_uri, ">"))
-
-
+    
+    def movies_by_director(self, director_name):
+        return self.graph.query(
+                 """ SELECT ?title ?year
+                        WHERE {
+                        ?movie imdb:director "%s" .
+                        ?movie imdb:year ?year .
+                        ?movie dc:title ?title .
+                }""" % director_name)
+    
+    
+    def movie_by_url(self, url):
+        return self.graph.query(
+            """ SELECT ?title ?year ?director ?cast
+                WHERE {
+                    %s a imdb:Movie .
+                    %s dc:title ?title .
+                    %s imdb:year ?year .
+                    %s imdb:director ?director .
+                    %s imdb:cast ?cast .
+                }"""%(url,url,url,url,url))
+    
 def main(argv=None):
 
     if not argv:
@@ -328,7 +350,7 @@ def main(argv=None):
             print(s.len())
         elif argv[1] == "listofusers":
             for user_name in u.list_users():
-                print("%s" % str(user_name))
+                print("%s" % str(user_name[0]))
         elif argv[1] == "userbynick":
             for data_user in u.user_by_nick(argv[2]):
                 print(" Nick : %s\n Nombre : %s\n Email : %s" % data_user)
@@ -422,9 +444,11 @@ def main(argv=None):
                     table = np.append(table, [movie], axis=0)
             print(tabulate(np.delete(table, 0, axis=0),
                   table[0], tablefmt="fancy_grid", numalign="right", floatfmt=".1f"))
-        
-        elif argv[1] == "user_digraph":
-            print(u.show_user_digraph(argv[2]))
+        elif argv[1] == "moviebydirector":
+            for movie in s.movies_by_director(argv[2]):
+                print("%s - %s" % movie)    
+        elif argv[1] == "moviebyurl":
+            print(s.movie_by_url(argv[2]))
         
         else:
             print("Bandera no reconocida")
