@@ -29,13 +29,8 @@ useruri = "file://" + userfn
 title_store = "Movie Theater"
 title_user = "Fábrica de usuarios"
 
-r_cinema = re.compile(
-    r"^(.*?) <(((https|http)?):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*)>$"
-)
-
-r_newuser = re.compile(
-    r"^(.*?) <([a-z0-9_-]+(\.[a-z0-9_-]+)*@[a-z0-9_-]+(\.[a-z0-9_-]+)+)>$"
-)
+r_cinema = re.compile(r"^(.*?) <(((https|http)?):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*)>$")
+r_newuser = re.compile(r"^(.*?) <([a-z0-9_-]+(\.[a-z0-9_-]+)*@[a-z0-9_-]+(\.[a-z0-9_-]+)+)>$")
 
 IMDB = Namespace("http://www.csd.abdn.ac.uk/~ggrimnes/dev/imdb/IMDB#")
 # predicate: vocabulary for expressing reviews and ratings using the RDF
@@ -43,9 +38,7 @@ REV = Namespace("http://purl.org/stuff/rev#")
 # predicate: friendship relationship
 REL = Namespace("https://www.perceive.net/schemas/20031015/relationship/")
 
-
 class DoConjunctiveGraph:
-
     def __init__(self, pathfn, uri, title):
         self.title = title
         self.pathfn = pathfn
@@ -69,9 +62,7 @@ class DoConjunctiveGraph:
     def help():
         print("Revisar : https://www.w3.org/TR/turtle/#BNode")
 
-
 class UserFactory(DoConjunctiveGraph):
-
     def __init__(self, pathfn, uri, title):
         #self.title = "Fabrica de Usuarios"
         DoConjunctiveGraph.__init__(self, pathfn, uri, title)
@@ -157,34 +148,26 @@ class UserFactory(DoConjunctiveGraph):
                     ?p foaf:name ?name .
                     ?p foaf:mbox ?mbox .
                 }""" % nick_user)
-
+    
     def user_is_in(self, user_nick):
         # verifica si el triple de tipo persona con nick_name esta en el grafo
         return (URIRef(self.uri + "#%s" % user_nick), RDF.type, FOAF["Person"]) in self.graph
 
-    def show_user_digraph(self, flag):
-        return flag
-
 
 class Store(DoConjunctiveGraph):
-
     def __init__(self, pathfn, uri, title):
         DoConjunctiveGraph.__init__(self, pathfn, uri, title)
         # cuando inicializamos agrega el triple con predicado Titulo
         self.graph.add((URIRef(self.uri), DC["title"], Literal(self.title)))
-        # self.save()
 
     def cinema(self, data=None):
         if data is not None:
             # extraemos información de la entrada gracias a la expresion regular
             name_cinema, web_cinema = (r_cinema.match(
                 data).group(1), r_cinema.match(data).group(2))
-            self.graph.add((URIRef(self.uri + "#cinema"),
-                           RDF.type, FOAF["Organization"]))
-            self.graph.add((URIRef(self.uri + "#cinema"),
-                           FOAF["name"], Literal(name_cinema)))
-            self.graph.add((URIRef(self.uri + "#cinema"),
-                           FOAF["weblog"], Literal(web_cinema)))
+            self.graph.add((URIRef(self.uri + "#cinema"), RDF.type, FOAF["Organization"]))
+            self.graph.add((URIRef(self.uri + "#cinema"), FOAF["name"], Literal(name_cinema)))
+            self.graph.add((URIRef(self.uri + "#cinema"), FOAF["weblog"], Literal(web_cinema)))
             self.save()
         else:
             return self.graph.objects(URIRef(self.uri + "#cinema"), FOAF["name"])
@@ -265,27 +248,16 @@ class Store(DoConjunctiveGraph):
         movieuri = URIRef("https://www.imdb.com/title/tt%s/" % movie_id)
         self.graph.add(
             (movieuri, REV["hasReview"], URIRef("%s#%s" % (self.uri, review))))
-        #self.graph.add((review, RDF.type, REV["Review"]))
-        #self.graph.add((review, DC["date"], Literal(date)))
-        #self.graph.add((review, REV["maxRating"], Literal(5)))
-        #self.graph.add((review, REV["minRating"], Literal(0)))
-        #self.graph.add((review, REV["reviewer"], user_uri))
-        #self.graph.add((review, REV["rating"], Literal(rating)))
+  
         self.graph.add(
             (URIRef("%s#%s" % (self.uri, review)), RDF.type, REV["Review"]))
-        self.graph.add((URIRef("%s#%s" % (self.uri, review)),
-                       DC["date"], Literal(date)))
-        self.graph.add((URIRef("%s#%s" % (self.uri, review)),
-                       REV["maxRating"], Literal(5)))
-        self.graph.add((URIRef("%s#%s" % (self.uri, review)),
-                       REV["minRating"], Literal(0)))
-        self.graph.add((URIRef("%s#%s" % (self.uri, review)),
-                       REV["reviewer"], user_uri))
-        self.graph.add((URIRef("%s#%s" % (self.uri, review)),
-                       REV["rating"], Literal(rating)))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)), DC["date"], Literal(date)))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["maxRating"], Literal(5)))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["minRating"], Literal(0)))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["reviewer"], user_uri))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["rating"], Literal(rating)))
         if comment is not None:
-            self.graph.add((URIRef("%s#%s" % (self.uri, review)),
-                           REV["text"], Literal(comment)))
+            self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["text"], Literal(comment)))
         self.save()
 
     def list_movies_user(self, user_uri):
@@ -299,13 +271,22 @@ class Store(DoConjunctiveGraph):
     
     def movies_by_director(self, director_name):
         return self.graph.query(
-                 """ SELECT ?title ?year
-                        WHERE {
-                        ?movie imdb:director "%s" .
-                        ?movie imdb:year ?year .
-                        ?movie dc:title ?title .
-                }""" % director_name)
+             """ SELECT ?title ?year
+                    WHERE {
+                    ?movie imdb:director "%s" .
+                    ?movie imdb:year ?year .
+                    ?movie dc:title ?title .
+            }""" % director_name)
     
+    def movies_by_actor(self, actor_name):
+        return self.graph.query(
+             """ SELECT ?title ?director ?year 
+                    WHERE {
+                    ?movie imdb:cast "%s" .
+                    ?movie dc:title ?title .
+                    ?movie imdb:director ?director .
+                    ?movie imdb:year ?year .
+            }""" % actor_name)    
     
     def movie_by_url(self, url):
         return self.graph.query(
@@ -319,12 +300,11 @@ class Store(DoConjunctiveGraph):
                 }"""%(url,url,url,url,url))
     
 def main(argv=None):
-
     if not argv:
         argv = sys.argv
 
-    s = Store(storefn, storeuri, title_store)
     u = UserFactory(userfn, useruri, title_user)
+    s = Store(storefn, storeuri, title_store)
 
     if len(argv) > 1:
         if argv[1] in ("help", "--help", "h", "-h"):
@@ -446,10 +426,15 @@ def main(argv=None):
                   table[0], tablefmt="fancy_grid", numalign="right", floatfmt=".1f"))
         elif argv[1] == "moviebydirector":
             for movie in s.movies_by_director(argv[2]):
-                print("%s - %s" % movie)    
+                print("%s - %s" % movie)
+        elif argv[1] == "moviebyactor":
+            for movie in s.movies_by_actor(argv[2]):
+                print("Título: %s\nDirector: %s\nAño:%s" % movie)  
         elif argv[1] == "moviebyurl":
             print(s.movie_by_url(argv[2]))
-        
+        elif argv[1] == "usermovies":
+            for movie in s.list_movies_user(u.get_user_uri(argv[2])):
+                print("%s" % movie)
         else:
             print("Bandera no reconocida")
     else:
@@ -458,9 +443,7 @@ def main(argv=None):
 
 if __name__ == "__main__":
     if not imdb:
-        raise Exception(
-            'This example requires the IMDB library! Install with "pip install imdbpy"'
-        )
+        raise Exception('This example requires the IMDB library! Install with "pip install imdbpy"')
     main()
 
 
