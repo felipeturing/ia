@@ -185,7 +185,6 @@ class Store(DoConjunctiveGraph):
                             )
                             AS ?IMDbRating
                         )
-
                 WHERE {
                     ?url rev:hasReview ?review .
                     ?url dc:title ?title .
