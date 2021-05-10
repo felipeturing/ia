@@ -6,7 +6,7 @@ RDF es un "Framework" para la descripción de recursos de la Web Semántica, pre
 
 ## Objetivo
 
-El objetivo de este trabajo es manipular una estructura RDF/N3 de usuarios y películas a partir de principalmente IMDb y FOAF para describir los recursos en un dominio determinado.
+El objetivo de este trabajo es manipular una estructura RDF/N3 de usuarios y películas a partir de principalmente IMDb y FOAF para describir y consultar con SparQL los recursos en un dominio determinado.
 
 ## Instalación
 
