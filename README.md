@@ -2,31 +2,35 @@
 
 ## RDF
 
-RDF es un "Framework" para la descripción de recursos de la Web Semántica.
+RDF es un "Framework" para la descripción de recursos de la Web Semántica, presenta múltiples formatos, nosotros vamos a emplear el formato N3 para la descripción de triples.
 
 ## Objetivo
 
-El objetivo de este trabajo es manipular una estructura RDF existente para describir recursos en un domino determinado.
+El objetivo de este trabajo es manipular una estructura RDF/N3 de usuarios y películas a partir de principalmente IMDb y FOAF para describir los recursos en un dominio determinado.
 
 ## Instalación
 
-Use the package manager [pip] to install rdflib.
-
 ```bash
 pip install rdflib
+pip install imdbpy
 ```
 
-## Ejemplos
+## Importaciones
 
 ```python
-import rdflib
+import datetime, os, sys, re, time
+import numpy as np
 
+try:
+    import imdb
+except ImportError:
+    imdb = None
+
+from tabulate import tabulate
+from pprintpp import pprint
+from rdflib import BNode, ConjunctiveGraph, URIRef, Literal, Namespace, RDF
+from rdflib.namespace import FOAF, DC
 ```
-
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
 
 ## Equipo
 1. Jesús Andrés Torrejón León

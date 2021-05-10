@@ -1,7 +1,6 @@
 #@author : Grupo 1
 
 import datetime, os, sys, re, time
-import rdfextras as rdfe
 import numpy as np
 
 try:
