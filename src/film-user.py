@@ -1,6 +1,10 @@
-#@author : Grupo 1
+# @author : Grupo 1
 
-import datetime, os, sys, re, time
+import datetime
+import os
+import sys
+import re
+import time
 import numpy as np
 
 try:
@@ -19,7 +23,7 @@ userfn = os.path.expanduser("~/users.n3")
 storeuri = "file://" + storefn
 useruri = "file://" + userfn
 title_store = "Movie Theater"
-title_user  = "Fábrica de usuarios"
+title_user = "Fábrica de usuarios"
 r_cinema = re.compile(
     r"^(.*?) <(((https|http)?):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*)>$"
 )
@@ -37,16 +41,16 @@ class DoConjunctiveGraph:
         self.title = title
         self.pathfn = pathfn
         self.uri = uri
-        self.graph = ConjunctiveGraph() # instancia del grafo
+        self.graph = ConjunctiveGraph()  # instancia del grafo
         if os.path.exists(self.pathfn):
             self.graph.load(self.uri, format="n3")
-        self.graph.bind("dc", DC) # Para enlazar los prefijos
+        self.graph.bind("dc", DC)  # Para enlazar los prefijos
         self.graph.bind("foaf", FOAF)
 
     def save(self):
         self.graph.serialize(self.uri, format="n3")
 
-    def len(self): # Contar el numero de triples
+    def len(self):  # Contar el numero de triples
         return self.graph.__len__()
 
     def help():
@@ -61,24 +65,31 @@ class UserFactory(DoConjunctiveGraph):
         self.graph.add((URIRef(self.uri), DC["title"], Literal(self.title)))
 
     def new_user(self, user_data=None):
-        user_nick, user_email = (r_newuser.match(user_data).group(1), r_newuser.match(user_data).group(2))
-        self.graph.add((URIRef(self.uri + "#%s"%user_nick), RDF.type, FOAF["Person"]))
-        self.graph.add((URIRef(self.uri + "#%s"%user_nick), FOAF["nick"], Literal(user_nick)))
-        self.graph.add((URIRef(self.uri + "#%s"%user_nick), FOAF["mbox"], Literal(user_email)))
+        user_nick, user_email = (r_newuser.match(user_data).group(
+            1), r_newuser.match(user_data).group(2))
+        self.graph.add((URIRef(self.uri + "#%s" %
+                               user_nick), RDF.type, FOAF["Person"]))
+        self.graph.add((URIRef(self.uri + "#%s" % user_nick),
+                        FOAF["nick"], Literal(user_nick)))
+        self.graph.add((URIRef(self.uri + "#%s" % user_nick),
+                        FOAF["mbox"], Literal(user_email)))
         self.save()
-        return user_nick # para poder trabajar con nick ya serializado en el archivo n3
+        return user_nick  # para poder trabajar con nick ya serializado en el archivo n3
 
     def set_user_name(self, user_nick, user_name):
         if not self.user_is_in(user_nick):
-            raise Exception ("El nick %s no está registrado"%user_nick)
-        self.graph.add((URIRef(self.uri + "#%s"%user_nick), FOAF["name"], Literal(user_name)))
+            raise Exception("El nick %s no está registrado" % user_nick)
+        self.graph.add((URIRef(self.uri + "#%s" % user_nick),
+                        FOAF["name"], Literal(user_name)))
         self.save()
 
     def set_friends(self, user_nick_me, user_nick_you):
         if not (self.user_is_in(user_nick_me) and self.user_is_in(user_nick_you)):
-            raise Exception ("Algún amigo no está registrado")
-        self.graph.add((URIRef(self.uri + "#%s"%user_nick_you), REL["friendOf"], URIRef(self.uri + "#%s"%user_nick_me)))
-        self.graph.add((URIRef(self.uri + "#%s"%user_nick_me), REL["friendOf"], URIRef(self.uri + "#%s"%user_nick_you)))
+            raise Exception("Algún amigo no está registrado")
+        self.graph.add((URIRef(self.uri + "#%s" % user_nick_you),
+                        REL["friendOf"], URIRef(self.uri + "#%s" % user_nick_me)))
+        self.graph.add((URIRef(self.uri + "#%s" % user_nick_me),
+                        REL["friendOf"], URIRef(self.uri + "#%s" % user_nick_you)))
         self.save()
 
     def list_friends(self):
@@ -104,10 +115,10 @@ class UserFactory(DoConjunctiveGraph):
                     ?p foaf:nick "%s" .
                     ?p rel:friendOf ?q .
                     ?q foaf:nick ?nick .
-                }"""%nick_user)
+                }""" % nick_user)
 
     def get_user_uri(self, user_nick):
-        return URIRef(self.uri + "#%s"%user_nick)
+        return URIRef(self.uri + "#%s" % user_nick)
 
     def user_by_nick(self, nick_user):
         return self.graph.query(
@@ -117,15 +128,15 @@ class UserFactory(DoConjunctiveGraph):
                     ?p foaf:nick ?nick .
                     ?p foaf:name ?name .
                     ?p foaf:mbox ?mbox .
-                }"""%nick_user)
+                }""" % nick_user)
 
     def user_is_in(self, user_nick):
-        return (URIRef(self.uri + "#%s"%user_nick), RDF.type, FOAF["Person"]) in self.graph
+        return (URIRef(self.uri + "#%s" % user_nick), RDF.type, FOAF["Person"]) in self.graph
 
 
 class Store(DoConjunctiveGraph):
 
-    def __init__(self, pathfn, uri, title ):
+    def __init__(self, pathfn, uri, title):
         DoConjunctiveGraph.__init__(self, pathfn, uri, title)
         self.graph.bind("imdb", IMDB)
         self.graph.bind("rev", REV)
@@ -133,10 +144,14 @@ class Store(DoConjunctiveGraph):
 
     def cinema(self, data=None):
         if data is not None:
-            name_cinema, web_cinema = (r_cinema.match(data).group(1), r_cinema.match(data).group(2))
-            self.graph.add((URIRef(self.uri + "#cinema"), RDF.type, FOAF["Organization"]))
-            self.graph.add((URIRef(self.uri + "#cinema"), FOAF["name"], Literal(name_cinema)))
-            self.graph.add((URIRef(self.uri + "#cinema"), FOAF["weblog"], Literal(web_cinema)))
+            name_cinema, web_cinema = (r_cinema.match(
+                data).group(1), r_cinema.match(data).group(2))
+            self.graph.add((URIRef(self.uri + "#cinema"),
+                            RDF.type, FOAF["Organization"]))
+            self.graph.add((URIRef(self.uri + "#cinema"),
+                            FOAF["name"], Literal(name_cinema)))
+            self.graph.add((URIRef(self.uri + "#cinema"),
+                            FOAF["weblog"], Literal(web_cinema)))
             self.save()
         else:
             return self.graph.objects(URIRef(self.uri + "#cinema"), FOAF["name"])
@@ -155,14 +170,14 @@ class Store(DoConjunctiveGraph):
                 WHERE {
                     %s%s%s dc:title ?title .
                     %s%s%s imdb:year ?year .
-                }"""%("<",movie_uri,">","<",movie_uri,">"))
+                }""" % ("<", movie_uri, ">", "<", movie_uri, ">"))
 
     def movie_uri_by_title(self, movie_title):
         return self.graph.query(
             """ SELECT DISTINCT ?p
                 WHERE {
                     ?p dc:title "%s" .
-                }"""%movie_title)
+                }""" % movie_title)
 
     def top_rated_movies(self, offset, limit, m):
         C = self.graph.query(
@@ -172,7 +187,7 @@ class Store(DoConjunctiveGraph):
                     ?review a rev:Review .
                     ?review rev:rating ?rating .
                 }""")
-        C = float("%s"%list(C)[0])
+        C = float("%s" % list(C)[0])
 
         return self.graph.query(
             """ SELECT (?title AS ?pelicula)
@@ -194,7 +209,7 @@ class Store(DoConjunctiveGraph):
                 GROUP BY ?title
                 ORDER BY DESC(?IMDbRating)
                 LIMIT %s
-                OFFSET %s"""%(m,m,m,C,limit, offset))
+                OFFSET %s""" % (m, m, m, C, limit, offset))
 
     def new_movie(self, movie):
         movieuri = URIRef("https://www.imdb.com/title/tt%s/" % movie.movieID)
@@ -218,7 +233,7 @@ class Store(DoConjunctiveGraph):
                     %s imdb:year ?year .
                     %s imdb:director ?director .
                     %s imdb:cast ?cast .
-                }"""%(url,url,url,url,url))
+                }""" % (url, url, url, url, url))
 
     def movie_is_in(self, uri):
         return (URIRef(uri), RDF.type, IMDB["Movie"]) in self.graph
@@ -231,20 +246,28 @@ class Store(DoConjunctiveGraph):
                     ?q rev:hasReview ?p .
                     ?q dc:title ?title
 
-                }"""%(user_uri))
+                }""" % (user_uri))
 
     def new_review(self, user_uri, movie_id, date, rating, comment=None):
         review = BNode()
         movieuri = URIRef("https://www.imdb.com/title/tt%s/" % movie_id)
-        self.graph.add((movieuri, REV["hasReview"], URIRef("%s#%s" % (self.uri, review))))
-        self.graph.add((URIRef("%s#%s" % (self.uri, review)), RDF.type, REV["Review"]))
-        self.graph.add((URIRef("%s#%s" % (self.uri, review)), DC["date"], Literal(date)))
-        self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["maxRating"], Literal(5)))
-        self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["minRating"], Literal(0)))
-        self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["reviewer"], user_uri))
-        self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["rating"], Literal(rating)))
+        self.graph.add(
+            (movieuri, REV["hasReview"], URIRef("%s#%s" % (self.uri, review))))
+        self.graph.add(
+            (URIRef("%s#%s" % (self.uri, review)), RDF.type, REV["Review"]))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)),
+                        DC["date"], Literal(date)))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)),
+                        REV["maxRating"], Literal(5)))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)),
+                        REV["minRating"], Literal(0)))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)),
+                        REV["reviewer"], user_uri))
+        self.graph.add((URIRef("%s#%s" % (self.uri, review)),
+                        REV["rating"], Literal(rating)))
         if comment is not None:
-            self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["text"], Literal(comment)))
+            self.graph.add((URIRef("%s#%s" % (self.uri, review)),
+                            REV["text"], Literal(comment)))
         self.save()
 
     def list_movies_user(self, user_uri):
@@ -254,7 +277,7 @@ class Store(DoConjunctiveGraph):
                     ?p rev:reviewer %s%s%s .
                     ?movie rev:hasReview ?p .
                     ?movie dc:title ?title .
-                }"""%("<",user_uri,">"))
+                }""" % ("<", user_uri, ">"))
 
 
 def main(argv=None):
@@ -265,21 +288,23 @@ def main(argv=None):
     s = Store(storefn, storeuri, title_store)
     u = UserFactory(userfn, useruri, title_user)
 
-    if  len(argv)>1:
+    if len(argv) > 1:
         if argv[1] in ("help", "--help", "h", "-h"):
             help()
         elif argv[1] == "newuser":
             nick_user = r_newuser.match(argv[2]).group(1)
             if u.user_is_in(nick_user):
-               raise Exception("El nick %s ya se encuentra registrado"%nick_user)
+                raise Exception(
+                    "El nick %s ya se encuentra registrado" % nick_user)
             else:
                 nick_registered = u.new_user(argv[2])
                 try:
                     user_name = eval(input("Nombre: "))
                     u.set_user_name(nick_registered, user_name)
                 except:
-                    raise Exception ("Error al registrar el nombre de %s"%nick_registered)
-        elif argv[1] == "setfriends" :
+                    raise Exception(
+                        "Error al registrar el nombre de %s" % nick_registered)
+        elif argv[1] == "setfriends":
             u.set_friends(argv[2], argv[3])
         elif argv[1] == "triplesusersn3":
             print(u.len())
@@ -287,16 +312,16 @@ def main(argv=None):
             print(s.len())
         elif argv[1] == "listofusers":
             for user_name in u.list_users():
-                print("%s"%user_name)
+                print("%s" % user_name)
         elif argv[1] == "userbynick":
             for data_user in u.user_by_nick(argv[2]):
-                print(" Nick : %s\n Nombre : %s\n Email : %s"%data_user)
+                print(" Nick : %s\n Nombre : %s\n Email : %s" % data_user)
         elif argv[1] == "listoffriends":
             for data_friend in u.list_friends():
-                print("%s es amig@ de %s"%data_friend)
+                print("%s es amig@ de %s" % data_friend)
         elif argv[1] == "myfriends":
             for nick_friend in u.list_friends_of_nick(argv[2]):
-                print("%s"%nick_friend)
+                print("%s" % nick_friend)
         elif argv[1] == "cinema":
             if os.path.exists(storefn):
                 print("Ya existe un cine registrado")
@@ -308,29 +333,37 @@ def main(argv=None):
                     print("La película ya se encuentra registrada")
                 else:
                     i = imdb.IMDb()
-                    movie = i.get_movie(argv[2][len("https://www.imdb.com/title/tt") : -1])
-                    print("Película : %s" %movie["title"].encode("utf-8"))
-                    print("Año : %s"%movie["year"])
-                    print("Género : ", end = " ")
+                    movie = i.get_movie(
+                        argv[2][len("https://www.imdb.com/title/tt"): -1])
+                    print("Película : %s" % movie["title"].encode("utf-8"))
+                    print("Año : %s" % movie["year"])
+                    print("Género : ", end=" ")
                     for genre in movie["genres"]:
-                        print("%s"%genre, end = " ")
+                        print("%s" % genre, end=" ")
                     print("")
                     for director in movie["director"]:
-                        print("Dirigida por: %s" % director["name"].encode("utf-8"))
+                        print("Dirigida por: %s" %
+                              director["name"].encode("utf-8"))
                     print("Actores principales:")
                     for actor in (movie["cast"][0], movie["cast"][1]):
-                        print("%s como %s" % (actor["name"].encode("utf-8"),actor.currentRole))
-                    s.new_movie(movie) #Registrar la cabecera de la pelicula (nombre, fecha de revision, tipo de objeto, director, genero y actores principales)
-            else: raise Exception("El formato de la película debe ser https://www.imdb.com/title/tt[id]/")
+                        print("%s como %s" %
+                              (actor["name"].encode("utf-8"), actor.currentRole))
+                    # Registrar la cabecera de la pelicula (nombre, fecha de revision, tipo de objeto, director, genero y actores principales)
+                    s.new_movie(movie)
+            else:
+                raise Exception(
+                    "El formato de la película debe ser https://www.imdb.com/title/tt[id]/")
 
         elif argv[1] == "review":
             if not len(list(s.movie_uri_by_title(argv[3]))) == 0:
-                movie_uri = "%s"%list(s.movie_uri_by_title(argv[3]))[0]
+                movie_uri = "%s" % list(s.movie_uri_by_title(argv[3]))[0]
                 if u.user_is_in(argv[2]) and s.movie_is_in(movie_uri):
                     user_uri = u.get_user_uri(argv[2])
-                    movie_id = movie_uri[len("https://www.imdb.com/title/tt") : -1]
+                    movie_id = movie_uri[len(
+                        "https://www.imdb.com/title/tt"): -1]
                     rating = None
-                    print("Película : %s \t Año: %s"%list(s.data_movie_by_uri(movie_uri))[0])
+                    print("Película : %s \t Año: %s" %
+                          list(s.data_movie_by_uri(movie_uri))[0])
                     while not rating or (rating > 5 or rating <= 0):
                         try:
                             rating = int(eval(input("Valoración (max 5): ")))
@@ -339,8 +372,10 @@ def main(argv=None):
                     date = None
                     while not date:
                         try:
-                            i = eval(input("Fecha de visualización (YYYY-MM-DD): "))
-                            date = datetime.datetime(*time.strptime(i, "%Y-%m-%d")[:6])
+                            i = eval(
+                                input("Fecha de visualización (YYYY-MM-DD): "))
+                            date = datetime.datetime(
+                                *time.strptime(i, "%Y-%m-%d")[:6])
                         except:
                             date = None
                     comment = eval(input("Comentario: "))
@@ -350,12 +385,11 @@ def main(argv=None):
 
         elif argv[1] == "listofmovies":
             for movie in s.listmovies():
-                print("%s - %s"%movie)
+                print("%s - %s" % movie)
 
         elif argv[1] == "moviebyURL":
             for data_movie in s.movie_by_url("<https://www.imdb.com/title/tt0468569/>"):
-                print("%s-%s-%s-%s"%data_movie)
-
+                print("%s-%s-%s-%s" % data_movie)
 
         elif argv[1] == "recommendtome":
             """ Peliculas clasificadas por amigos """
@@ -366,16 +400,50 @@ def main(argv=None):
                     print("  %s"%movie_user)"""
             for nick_friend in u.list_friends_of_nick(argv[2]):
                 for movie_user in s.list_movies_user(u.get_user_uri(nick_friend)):
-                    print("  %s"%movie_user)
+                    print("  %s" % movie_user)
         elif argv[1] == "topratedmovies":
-            table = np.array([["Película", "Número de reviews", "Valoración promedio(0-5)","IMDb Rating"]])
-            m = 2# minimo de reviews requeridas para ingresar en la lista top de recomendados
+            table = np.array(
+                [["Película", "Número de reviews", "Valoración promedio(0-5)", "IMDb Rating"]])
+            m = 2  # minimo de reviews requeridas para ingresar en la lista top de recomendados
             for movie in s.top_rated_movies(argv[2], argv[3], m):
-                if(int(movie[1])>=m):
-                    table = np.append(table, [movie] ,axis = 0)
-            print(tabulate(np.delete(table, 0, axis=0), table[0], tablefmt="fancy_grid", numalign="right", floatfmt=".1f"))
-        else: print("Bandera no reconocida")
-    else: print("Sin acciones")
+                if(int(movie[1]) >= m):
+                    table = np.append(table, [movie], axis=0)
+            print(tabulate(np.delete(table, 0, axis=0),
+                           table[0], tablefmt="fancy_grid", numalign="right", floatfmt=".1f"))
+        elif argv[1] == "autoload":
+            if argv[2].endswith(".txt"):
+                with open(argv[2]) as f:
+                    line = f.readline()
+                    while line:
+                        parts = line.split(":")
+                        id_number = parts[-1]
+                        i = imdb.IMDb()
+                        movie = i.get_movie(id_number)
+                        print("Película : %s" % movie["title"].encode("utf-8"))
+                        print("Año : %s" % movie["year"])
+                        print("Género : ", end=" ")
+                        for genre in movie["genres"]:
+                            print("%s" % genre, end=" ")
+                        print("")
+                        for director in movie["director"]:
+                            print("Dirigida por: %s" %
+                                  director["name"].encode("utf-8"))
+                        print("Actores principales:")
+                        for actor in (movie["cast"][0], movie["cast"][1]):
+                            print("%s como %s" %
+                                  (actor["name"].encode("utf-8"), actor.currentRole))
+                        # Registrar la cabecera de la pelicula (nombre, fecha de revision, tipo de objeto, director, genero y actores principales)
+                        s.new_movie(movie)
+
+                        line = f.readline()
+
+
+
+        else:
+            print("Bandera no reconocida")
+    else:
+        print("Sin acciones")
+
 
 if __name__ == "__main__":
     if not imdb:
