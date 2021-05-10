@@ -6,29 +6,30 @@
 
 <file:///home/turing/users.n3#jesus15> a foaf:Person ;
     foaf:mbox "jesus@uni.pe" ;
-    foaf:name "Jesús Torrejon" ;
+    foaf:name "Jesús Torrejón" ;
     foaf:nick "jesus15" ;
-    rel:friendOf <file:///home/turing/users.n3#jordi15> .
+    rel:friendOf <file:///home/turing/users.n3#felipe31415>,
+        <file:///home/turing/users.n3#jordi88> .
 
-<file:///home/turing/users.n3#felipeturing> a foaf:Person ;
+<file:///home/turing/users.n3#julio21> a foaf:Person ;
+    foaf:mbox "julio@uni.pe" ;
+    foaf:name "Julio Cesar" ;
+    foaf:nick "julio21" ;
+    rel:friendOf <file:///home/turing/users.n3#felipe31415>,
+        <file:///home/turing/users.n3#jordi88> .
+
+<file:///home/turing/users.n3#felipe31415> a foaf:Person ;
     foaf:mbox "felipe@uni.pe" ;
-    foaf:name "Walter Jesús Felipe Tolentino" ;
-    foaf:nick "felipeturing" ;
-    rel:friendOf <file:///home/turing/users.n3#jordi15>,
-        <file:///home/turing/users.n3#lara15> .
+    foaf:name "Walter Felipe" ;
+    foaf:nick "felipe31415" ;
+    rel:friendOf <file:///home/turing/users.n3#jesus15>,
+        <file:///home/turing/users.n3#jordi88>,
+        <file:///home/turing/users.n3#julio21> .
 
-<file:///home/turing/users.n3#lara15> a foaf:Person ;
-    foaf:mbox "lara@uni.pe" ;
-    foaf:name "Cesar Lara" ;
-    foaf:nick "lara15" ;
-    rel:friendOf <file:///home/turing/users.n3#felipeturing>,
-        <file:///home/turing/users.n3#jordi15> .
-
-<file:///home/turing/users.n3#jordi15> a foaf:Person ;
+<file:///home/turing/users.n3#jordi88> a foaf:Person ;
     foaf:mbox "jordi@uni.pe" ;
     foaf:name "Jordi Bardales" ;
-    foaf:nick "jordi15" ;
-    rel:friendOf <file:///home/turing/users.n3#felipeturing>,
+    foaf:nick "jordi88" ;
+    rel:friendOf <file:///home/turing/users.n3#felipe31415>,
         <file:///home/turing/users.n3#jesus15>,
-        <file:///home/turing/users.n3#lara15> .
-
+        <file:///home/turing/users.n3#julio21> .
