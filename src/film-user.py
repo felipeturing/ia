@@ -15,24 +15,20 @@ from rdflib.namespace import FOAF, DC
 
 storefn = os.path.expanduser("~/movies.n3")
 userfn = os.path.expanduser("~/users.n3")
-
 storeuri = "file://" + storefn
 useruri = "file://" + userfn
-
 title_store = "Movie Theater"
 title_user  = "Fábrica de usuarios"
-
 r_cinema = re.compile(
     r"^(.*?) <(((https|http)?):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*)>$"
 )
-
 r_newuser = re.compile(
     r"^(.*?) <([a-z0-9_-]+(\.[a-z0-9_-]+)*@[a-z0-9_-]+(\.[a-z0-9_-]+)+)>$"
 )
-
 IMDB = Namespace("http://www.csd.abdn.ac.uk/~ggrimnes/dev/imdb/IMDB#")
 REV = Namespace("http://purl.org/stuff/rev#")
 REL = Namespace("https://www.perceive.net/schemas/20031015/relationship/")
+
 
 class DoConjunctiveGraph:
 
@@ -45,7 +41,6 @@ class DoConjunctiveGraph:
             self.graph.load(self.uri, format="n3")
         self.graph.bind("dc", DC) # Para enlazar los prefijos
         self.graph.bind("foaf", FOAF)
-
 
     def save(self):
         self.graph.serialize(self.uri, format="n3")
@@ -60,11 +55,9 @@ class DoConjunctiveGraph:
 class UserFactory(DoConjunctiveGraph):
 
     def __init__(self, pathfn, uri, title):
-        #self.title = "Fabrica de Usuarios"
         DoConjunctiveGraph.__init__(self, pathfn, uri, title)
         self.graph.bind("rel", REL)
         self.graph.add((URIRef(self.uri), DC["title"], Literal(self.title)))
-        #self.save()
 
     def new_user(self, user_data=None):
         user_nick, user_email = (r_newuser.match(user_data).group(1), r_newuser.match(user_data).group(2))
@@ -114,7 +107,7 @@ class UserFactory(DoConjunctiveGraph):
 
     def get_user_uri(self, user_nick):
         return URIRef(self.uri + "#%s"%user_nick)
-#        return self.graph.objects(URIRef(self.uri+"#felipeturing"), FOAF["name"])
+
     def user_by_nick(self, nick_user):
         return self.graph.query(
             """ SELECT ?nick ?name ?mbox
@@ -136,7 +129,6 @@ class Store(DoConjunctiveGraph):
         self.graph.bind("imdb", IMDB)
         self.graph.bind("rev", REV)
         self.graph.add((URIRef(self.uri), DC["title"], Literal(self.title)))
-        #self.save()
 
     def cinema(self, data=None):
         if data is not None:
@@ -242,15 +234,9 @@ class Store(DoConjunctiveGraph):
                 }"""%(user_uri))
 
     def new_review(self, user_uri, movie_id, date, rating, comment=None):
-        review = BNode()  # @@ humanize the identifier (something like #rev-$date)
+        review = BNode()
         movieuri = URIRef("https://www.imdb.com/title/tt%s/" % movie_id)
         self.graph.add((movieuri, REV["hasReview"], URIRef("%s#%s" % (self.uri, review))))
-        #self.graph.add((review, RDF.type, REV["Review"]))
-        #self.graph.add((review, DC["date"], Literal(date)))
-        #self.graph.add((review, REV["maxRating"], Literal(5)))
-        #self.graph.add((review, REV["minRating"], Literal(0)))
-        #self.graph.add((review, REV["reviewer"], user_uri))
-        #self.graph.add((review, REV["rating"], Literal(rating)))
         self.graph.add((URIRef("%s#%s" % (self.uri, review)), RDF.type, REV["Review"]))
         self.graph.add((URIRef("%s#%s" % (self.uri, review)), DC["date"], Literal(date)))
         self.graph.add((URIRef("%s#%s" % (self.uri, review)), REV["maxRating"], Literal(5)))
