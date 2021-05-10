@@ -1,24 +1,20 @@
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix imdb: <http://www.csd.abdn.ac.uk/~ggrimnes/dev/imdb/IMDB#> .
-@prefix ns1: <http://xmlns.com/foaf/0.1/> .
 @prefix rev: <http://purl.org/stuff/rev#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <file:///home/turing/movies.n3> dc:title "Movie Theater" .
 
-<file:///home/turing/movies.n3#cinema> a ns1:Organization ;
-    ns1:name "Cinestar" ;
-    ns1:weblog "https://www.cinestar.com.pe/" .
-
-<https://www.imdb.com/title/tt0068646/> a imdb:Movie ;
-    dc:title "The Godfather" ;
-    imdb:cast "Al Pacino",
-        "Marlon Brando" ;
-    imdb:director "Francis Ford Coppola" ;
-    imdb:year 1972 .
+<file:///home/turing/movies.n3#cinema> a foaf:Organization ;
+    foaf:name "Cinestar" ;
+    foaf:weblog "https://www.cinestar.com.pe/" .
 
 <https://www.imdb.com/title/tt0102926/> a imdb:Movie ;
     dc:title "The Silence of the Lambs" ;
+    rev:hasReview <file:///home/turing/movies.n3#N3e574e7d8af54487bf632ca74e556f31>,
+        <file:///home/turing/movies.n3#N7788a83488e24a26a24500416946bae4>,
+        <file:///home/turing/movies.n3#Nd85c48fd409a4fceb37d5330c1730ebc> ;
     imdb:cast "Jodie Foster",
         "Lawrence A. Bonney" ;
     imdb:director "Jonathan Demme" ;
@@ -29,20 +25,12 @@
 
 <https://www.imdb.com/title/tt0109830/> a imdb:Movie ;
     dc:title "Forrest Gump" ;
-    rev:hasReview <file:///home/turing/movies.n3#Nd3dc3b38cd574c7ba76f399c01a72818> ;
+    rev:hasReview <file:///home/turing/movies.n3#Nf22f335fe54040449d5be757a4acf20e> ;
     imdb:cast "Rebecca Williams",
         "Tom Hanks" ;
     imdb:director "Robert Zemeckis" ;
-    imdb:year 1994 .
-
-<https://www.imdb.com/title/tt0110912/> a imdb:Movie ;
-    dc:title "Pulp Fiction" ;
-    rev:hasReview <file:///home/turing/movies.n3#N62fc174ed2d3443a8b8c8526ec76b8c4> ;
-    imdb:cast "Amanda Plummer",
-        "Tim Roth" ;
-    imdb:director "Quentin Tarantino" ;
-    imdb:genres "Crime",
-        "Drama" ;
+    imdb:genres "Drama",
+        "Romance" ;
     imdb:year 1994 .
 
 <https://www.imdb.com/title/tt0120737/> a imdb:Movie ;
@@ -50,13 +38,20 @@
     imdb:cast "Alan Howard",
         "Noel Appleby" ;
     imdb:director "Peter Jackson" ;
+    imdb:genres "Action",
+        "Adventure",
+        "Drama",
+        "Fantasy" ;
     imdb:year 2001 .
 
 <https://www.imdb.com/title/tt0137523/> a imdb:Movie ;
     dc:title "Fight Club" ;
+    rev:hasReview <file:///home/turing/movies.n3#N5edca56769394aa79d7461089b287f39>,
+        <file:///home/turing/movies.n3#N6535ca62fab440e79ec477b5298da113> ;
     imdb:cast "Brad Pitt",
         "Edward Norton" ;
     imdb:director "David Fincher" ;
+    imdb:genres "Drama" ;
     imdb:year 1999 .
 
 <https://www.imdb.com/title/tt0468569/> a imdb:Movie ;
@@ -64,113 +59,122 @@
     imdb:cast "Christian Bale",
         "Heath Ledger" ;
     imdb:director "Christopher Nolan" ;
+    imdb:genres "Action",
+        "Crime",
+        "Drama",
+        "Thriller" ;
     imdb:year 2008 .
 
 <https://www.imdb.com/title/tt2084970/> a imdb:Movie ;
     dc:title "The Imitation Game" ;
-    rev:hasReview <file:///home/turing/movies.n3#N42e249b0830d4d2db6dab6b020eb4327>,
-        <file:///home/turing/movies.n3#Nf1cd4c7ed14c4adb931026d7b54f0420> ;
+    rev:hasReview <file:///home/turing/movies.n3#N2861aae1f4d343baa89048d242fb3b24>,
+        <file:///home/turing/movies.n3#N7a939587fd984882a4bce4a12132c4b7>,
+        <file:///home/turing/movies.n3#N8be1305256214a22aa6040a6a133374a> ;
     imdb:cast "Benedict Cumberbatch",
         "Keira Knightley" ;
     imdb:director "Morten Tyldum" ;
+    imdb:genres "Biography",
+        "Drama",
+        "Thriller",
+        "War" ;
     imdb:year 2014 .
 
 <https://www.imdb.com/title/tt2980516/> a imdb:Movie ;
     dc:title "The Theory of Everything" ;
-    rev:hasReview <file:///home/turing/movies.n3#N091c448a130e493aa470f854df7d21d6>,
-        <file:///home/turing/movies.n3#N78e64eca1b4044a7aa64f86262f8e8de>,
-        <file:///home/turing/movies.n3#Nb08d6cb674e944fda23f5b5034cd2c03>,
-        <file:///home/turing/movies.n3#Nc9795543c825482886afd59bd4580c35> ;
+    rev:hasReview <file:///home/turing/movies.n3#N9f5993b79a874b0391b33f1d122ed970>,
+        <file:///home/turing/movies.n3#Nac146edf5b844a29aa04c68281602ca0> ;
     imdb:cast "Eddie Redmayne",
         "Felicity Jones" ;
     imdb:director "James Marsh" ;
+    imdb:genres "Biography",
+        "Drama",
+        "Romance" ;
     imdb:year 2014 .
 
-<https://www.imdb.com/title/tt9208876/> a imdb:Movie ;
-    dc:title "The Falcon and the Winter Soldier" ;
-    rev:hasReview <file:///home/turing/movies.n3#N32c46f1598d643f489e30bcd4468f66e>,
-        <file:///home/turing/movies.n3#N749c0863a3084db59528198622f71997> ;
-    imdb:cast "Anthony Mackie",
-        "Sebastian Stan" ;
-    imdb:director "Kari Skogland" ;
-    imdb:year 2021 .
-
-<file:///home/turing/movies.n3#N091c448a130e493aa470f854df7d21d6> a rev:Review ;
-    dc:date "2019-02-13T00:00:00"^^xsd:dateTime ;
-    rev:maxRating 5 ;
-    rev:minRating 0 ;
-    rev:rating 1 ;
-    rev:reviewer <file:///home/turing/users.n3#felipeturing> ;
-    rev:text "Algo aburrida" .
-
-<file:///home/turing/movies.n3#N32c46f1598d643f489e30bcd4468f66e> a rev:Review ;
-    dc:date "2019-03-21T00:00:00"^^xsd:dateTime ;
-    rev:maxRating 5 ;
-    rev:minRating 0 ;
-    rev:rating 3 ;
-    rev:reviewer <file:///home/turing/users.n3#felipeturing> ;
-    rev:text "Infravalorada" .
-
-<file:///home/turing/movies.n3#N42e249b0830d4d2db6dab6b020eb4327> a rev:Review ;
-    dc:date "2019-02-13T00:00:00"^^xsd:dateTime ;
-    rev:maxRating 5 ;
-    rev:minRating 0 ;
-    rev:rating 5 ;
-    rev:reviewer <file:///home/turing/users.n3#felipeturing> ;
-    rev:text "Genial" .
-
-<file:///home/turing/movies.n3#N62fc174ed2d3443a8b8c8526ec76b8c4> a rev:Review ;
-    dc:date "2019-02-12T00:00:00"^^xsd:dateTime ;
-    rev:maxRating 5 ;
-    rev:minRating 0 ;
-    rev:rating 3 ;
-    rev:reviewer <file:///home/turing/users.n3#felipeturing> ;
-    rev:text "Mas o menos" .
-
-<file:///home/turing/movies.n3#N749c0863a3084db59528198622f71997> a rev:Review ;
-    dc:date "2019-02-12T00:00:00"^^xsd:dateTime ;
-    rev:maxRating 5 ;
-    rev:minRating 0 ;
-    rev:rating 3 ;
-    rev:reviewer <file:///home/turing/users.n3#lara15> ;
-    rev:text "A nada" .
-
-<file:///home/turing/movies.n3#N78e64eca1b4044a7aa64f86262f8e8de> a rev:Review ;
-    dc:date "2019-04-13T00:00:00"^^xsd:dateTime ;
-    rev:maxRating 5 ;
-    rev:minRating 0 ;
-    rev:rating 5 ;
-    rev:reviewer <file:///home/turing/users.n3#lara15> ;
-    rev:text "Increible" .
-
-<file:///home/turing/movies.n3#Nb08d6cb674e944fda23f5b5034cd2c03> a rev:Review ;
-    dc:date "2019-04-15T00:00:00"^^xsd:dateTime ;
-    rev:maxRating 5 ;
-    rev:minRating 0 ;
-    rev:rating 3 ;
-    rev:reviewer <file:///home/turing/users.n3#jordi15> ;
-    rev:text "Más o menos" .
-
-<file:///home/turing/movies.n3#Nc9795543c825482886afd59bd4580c35> a rev:Review ;
-    dc:date "2021-08-21T00:00:00"^^xsd:dateTime ;
-    rev:maxRating 5 ;
-    rev:minRating 0 ;
-    rev:rating 1 ;
-    rev:reviewer <file:///home/turing/users.n3#jesus15> ;
-    rev:text "No me gusto" .
-
-<file:///home/turing/movies.n3#Nd3dc3b38cd574c7ba76f399c01a72818> a rev:Review ;
-    dc:date "2019-02-02T00:00:00"^^xsd:dateTime ;
-    rev:maxRating 5 ;
-    rev:minRating 0 ;
-    rev:rating 3 ;
-    rev:reviewer <file:///home/turing/users.n3#felipeturing> ;
-    rev:text "Sobrevalorada" .
-
-<file:///home/turing/movies.n3#Nf1cd4c7ed14c4adb931026d7b54f0420> a rev:Review ;
-    dc:date "2021-03-21T00:00:00"^^xsd:dateTime ;
+<file:///home/turing/movies.n3#N2861aae1f4d343baa89048d242fb3b24> a rev:Review ;
+    dc:date "2018-04-12T00:00:00"^^xsd:dateTime ;
     rev:maxRating 5 ;
     rev:minRating 0 ;
     rev:rating 2 ;
-    rev:reviewer <file:///home/turing/users.n3#lara15> ;
-    rev:text "Regular" .
+    rev:reviewer <file:///home/turing/users.n3#jordi88> ;
+    rev:text "No me impresiono" .
+
+<file:///home/turing/movies.n3#N3e574e7d8af54487bf632ca74e556f31> a rev:Review ;
+    dc:date "2021-02-14T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 3 ;
+    rev:reviewer <file:///home/turing/users.n3#julio21> ;
+    rev:text "Me gusto" .
+
+<file:///home/turing/movies.n3#N5edca56769394aa79d7461089b287f39> a rev:Review ;
+    dc:date "2020-09-13T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 2 ;
+    rev:reviewer <file:///home/turing/users.n3#julio21> ;
+    rev:text "Sobrevalorada" .
+
+<file:///home/turing/movies.n3#N6535ca62fab440e79ec477b5298da113> a rev:Review ;
+    dc:date "2019-09-13T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 5 ;
+    rev:reviewer <file:///home/turing/users.n3#jordi88> ;
+    rev:text "Increible" .
+
+<file:///home/turing/movies.n3#N7788a83488e24a26a24500416946bae4> a rev:Review ;
+    dc:date "2021-02-13T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 4 ;
+    rev:reviewer <file:///home/turing/users.n3#felipe31415> ;
+    rev:text "Realizado de forma innovadora" .
+
+<file:///home/turing/movies.n3#N7a939587fd984882a4bce4a12132c4b7> a rev:Review ;
+    dc:date "2019-02-19T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 5 ;
+    rev:reviewer <file:///home/turing/users.n3#felipe31415> ;
+    rev:text "Increíble película" .
+
+<file:///home/turing/movies.n3#N8be1305256214a22aa6040a6a133374a> a rev:Review ;
+    dc:date "2021-09-13T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 5 ;
+    rev:reviewer <file:///home/turing/users.n3#julio21> ;
+    rev:text "Increible" .
+
+<file:///home/turing/movies.n3#N9f5993b79a874b0391b33f1d122ed970> a rev:Review ;
+    dc:date "2019-02-14T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 5 ;
+    rev:reviewer <file:///home/turing/users.n3#jesus15> ;
+    rev:text "I like it" .
+
+<file:///home/turing/movies.n3#Nac146edf5b844a29aa04c68281602ca0> a rev:Review ;
+    dc:date "2019-02-14T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 3 ;
+    rev:reviewer <file:///home/turing/users.n3#jordi88> ;
+    rev:text "Poco realista" .
+
+<file:///home/turing/movies.n3#Nd85c48fd409a4fceb37d5330c1730ebc> a rev:Review ;
+    dc:date "2019-03-14T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 5 ;
+    rev:reviewer <file:///home/turing/users.n3#jordi88> ;
+    rev:text "Me gusto mucho" .
+
+<file:///home/turing/movies.n3#Nf22f335fe54040449d5be757a4acf20e> a rev:Review ;
+    dc:date "2010-02-13T00:00:00"^^xsd:dateTime ;
+    rev:maxRating 5 ;
+    rev:minRating 0 ;
+    rev:rating 3 ;
+    rev:reviewer <file:///home/turing/users.n3#felipe31415> ;
+    rev:text "Le falto mayor creatividad" .
