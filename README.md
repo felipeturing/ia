@@ -11,8 +11,8 @@ El objetivo de este trabajo es manipular una estructura RDF/N3 de usuarios y pel
 ## Instalación
 
 ```bash
-pip install rdflib
-pip install imdbpy
+pip3 install rdflib
+pip3 install imdbpy
 ```
 
 ## Importaciones
@@ -33,7 +33,7 @@ from rdflib.namespace import FOAF, DC
 ```
 ## Instrucciones para la manipulación de RDF
 ```bash
-!python3 film-user.py cinema   "Cinestar <https://www.cinestar.com.pe/>"
+python3 film-user.py cinema   "Cinestar <https://www.cinestar.com.pe/>"
 python3 film-user.py newmovie "https://www.imdb.com/title/tt0102926/"
 python3 film-user.py newuser  "felipe31415 <felipe@uni.pe>"
 python3 film-user.py newuser  "jesus15 <jesus@uni.pe>"
